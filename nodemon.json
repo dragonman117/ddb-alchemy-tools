@@ -1,0 +1,6 @@
+{
+  "watch": ["src", "public"],
+  "ext": "ts,json, html, js",
+  "ignore": ["src/**/*.spec.ts"],
+  "exec": "npx tsc && node dist/server.js"
+}
