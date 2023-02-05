@@ -1,16 +1,15 @@
 export interface AlchemyCharacter {
     abilityScores: AlchemyStat[],
-    age?: string,
     armorClass: number,
-    copper?: number,
+    alignment: string,
+    challengeRating: string,
+    conditionImmunities: string[],
+    damageImmunities: AlchemyDamageMod[],
+    damageResistances: AlchemyDamageMod[],
     classes: AlchemyClass[],
     currentHp: number,
-    electrum?: number,
     exp: number,
-    eyes?: string,
-    gold?: number,
-    hair?: string,
-    height?: string,
+    hitDice: string,
     imageUri: string,
     initiativeBonus: number,
     items: AlchemyItem[],
@@ -19,21 +18,20 @@ export interface AlchemyCharacter {
     maxHp: number,
     movementModes: AlchemyMovementMode[],
     name: string,
-    platinum?: number,
     proficiencies: AlchemyProficiency[],
     proficiencyBonus: number,
     race: string,
-    silver?: number,
+    senses: AlchemySense[],
     skills: AlchemySkill[],
-    skin?: string,
     speed: number,
+    size: string,
     systemKey: string,
     spellcastingAbility: string,
     spellFilters: string[],
     spellSlots: AlchemySpellSlot[],
     spells: AlchemySpell[],
     textBlocks: AlchemyTextBlockSection[],
-    weight?: string,
+    type: string,
 }
 
 interface AlchemyStat {
@@ -66,6 +64,16 @@ interface AlchemyItem {
 export interface AlchemyProficiency {
     name: string,
     type: string,
+}
+
+export interface AlchemySense{
+    name: string,
+    distance: number,
+}
+
+export interface AlchemyDamageMod{
+    damageType: string,
+    condition: string,
 }
 
 interface AlchemySkill {

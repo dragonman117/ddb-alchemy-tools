@@ -1,5 +1,5 @@
 # D&D Beyond Alchemy Tools
-### v. 0.1.0
+### v. 0.2.0
 ----
 ## Description
 This is a repo to provide tools to help convert D&D Beyond content to Alchemy's Json format. At the moment it only provides
@@ -15,6 +15,13 @@ To get a valid Cobalt token follow these steps:
 5. Find the cookie named `CobaltSession` and copy the value
 
 Or for an easier way to get the token you can use [this](https://github.com/MrPrimate/ddb-importer-chrome) tool provided by Mr. Primate. 
+
+## Running
+To run ensure you have the latest LTS version of node installed and run the following:
+```bash
+yarn install
+yarn start
+```
 
 ## Thanks
 Special thanks to [Mr. Primate](https://github.com/MrPrimate) especially his work on the [D&D Beyond Proxy](https://github.com/MrPrimate/ddb-proxy). This project
