@@ -1,5 +1,5 @@
 # D&D Beyond Alchemy Tools
-### v. 0.1.0
+### v. 0.2.0
 ----
 ## Description
 This is a repo to provide tools to help convert D&D Beyond content to Alchemy's Json format. At the moment it only provides
