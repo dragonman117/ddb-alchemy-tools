@@ -16,6 +16,13 @@ To get a valid Cobalt token follow these steps:
 
 Or for an easier way to get the token you can use [this](https://github.com/MrPrimate/ddb-importer-chrome) tool provided by Mr. Primate. 
 
+## Running
+To run ensure you have the latest LTS version of node installed and run the following:
+```bash
+yarn install
+yarn start
+```
+
 ## Thanks
 Special thanks to [Mr. Primate](https://github.com/MrPrimate) especially his work on the [D&D Beyond Proxy](https://github.com/MrPrimate/ddb-proxy). This project
 builds on his work and is heavily inspired by it.
