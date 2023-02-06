@@ -15,8 +15,10 @@ import {
     AlchemyDamageMod,
     AlchemyMovementMode,
     AlchemyProficiency,
-    AlchemySense
+    AlchemySense, AlchemyTextBlock, AlchemyTextBlockSection
 } from "../models/alchemy";
+import TurndownService from "turndown";
+import parse from "node-html-parser";
 
 export async function monsterTools(id: string, urlTool: UrlTools): Promise<any | null> {
     const [monsterUrl, monsterHeader] = urlTool.getMonsterUrl(id);
@@ -29,15 +31,17 @@ export async function monsterTools(id: string, urlTool: UrlTools): Promise<any |
 
 export function monsterParse(source: MonsterData): AlchemyCharacter{
     const res = {} as AlchemyCharacter;
+    const turndown = new TurndownService();
     res.name = source.name;
     res.isNPC = true;
     res.race = "Monster"
+    res.systemKey = "5e";
     res.exp = PROFICIENCY_BONUS[source.challengeRatingId].xp;
+    res.description = turndown.turndown(source.characteristicsDescription ?? "");
     res.proficiencyBonus = PROFICIENCY_BONUS[source.challengeRatingId].proficiencyBonus;
     res.challengeRating = PROFICIENCY_BONUS[source.challengeRatingId].name;
     res.abilityScores = source.stats.map((stat) => {
-        const statName = STATS[stat.statId];
-        return {name: statName, value: stat.value};
+        return {name: STATS[stat.statId], value: stat.value};
     });
     res.currentHp = source.averageHitPoints;
     res.hitDice = source.hitPointDice.diceString;
@@ -73,5 +77,29 @@ export function monsterParse(source: MonsterData): AlchemyCharacter{
     source.damageAdjustments.filter((damage) => damage in DAMAGE_RESISTANCES_SPECIAL).forEach((damage) => {
         res.damageResistances.push(...DAMAGE_RESISTANCES_SPECIAL[damage]);
     });
+    res.textBlocks = parseSpecialTraits(source.specialTraitsDescription);
+
     return res;
+}
+
+function parseSpecialTraits(raw: string): AlchemyTextBlockSection[]{
+    const res = [] as AlchemyTextBlock[];
+    const turndown = new TurndownService();
+    //scrub the base html
+    raw = raw.replace("\n", "");
+    //Parse it to explore structure
+    const parsed = parse(raw);
+    parsed.childNodes.forEach((node) => {
+        // @ts-ignore
+        if (node.childNodes[0]["rawTagName"] == "em"){ // this is what D&D beyond uses as a title for a section
+            const ability = {} as AlchemyTextBlock;
+            ability.title = node.childNodes[0].childNodes[0].rawText.slice(0, -1);
+            node.childNodes = node.childNodes.slice(1);
+            ability.body = turndown.turndown(node.rawText);
+            res.push(ability);
+        } else { // this paragraph is part of the previous section
+            res[res.length - 1].body += "\n" + turndown.turndown(node.rawText);
+        }
+    });
+    return [{ title: "Abilities", textBlocks: res}] as AlchemyTextBlockSection[];
 }
