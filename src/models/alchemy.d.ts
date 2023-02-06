@@ -4,6 +4,7 @@ export interface AlchemyCharacter {
     alignment: string,
     challengeRating: string,
     conditionImmunities: string[],
+    description: string,
     damageImmunities: AlchemyDamageMod[],
     damageResistances: AlchemyDamageMod[],
     classes: AlchemyClass[],
@@ -132,17 +133,17 @@ interface AlchemySavingThrow {
     abilityName: "str" | "dex" | "con" | "int" | "wis" | "cha",
 }
 
-interface AlchemyTextBlock {
+export interface AlchemyTextBlock {
     title?: string,
     body?: string,
 }
 
-interface AlchemyTextBlockSection {
+export interface AlchemyTextBlockSection {
     title: string,
     textBlocks?: AlchemyTextBlock[],
 }
 
-interface AlchemyMovementMode {
+export interface AlchemyMovementMode {
     mode: string,
     distance: number,
 }
