@@ -2,6 +2,7 @@ export interface AlchemyCharacter {
     abilityScores: AlchemyStat[],
     armorClass: number,
     alignment: string,
+    actions: AlchemyAttackStep[],
     challengeRating: string,
     conditionImmunities: string[],
     description: string,
@@ -146,4 +147,61 @@ export interface AlchemyTextBlockSection {
 export interface AlchemyMovementMode {
     mode: string,
     distance: number,
+}
+
+export interface AlchemyAttackStep {
+    steps: AlchemyActionStep[],
+    name: string,
+    sortOrder: number,
+    description: string,
+}
+
+export interface AlchemyActionStep {
+    type: string,
+    journalCommand?: AlchemyJournalCommand;
+    diceRoll?: AlchemyDiceRoll;
+    attack?: AlchemyAttack;
+    skillCheck?: AlchemySkillCheck;
+}
+
+export interface AlchemyJournalCommand {
+    command: string,
+    args: string,
+}
+
+export interface AlchemyDiceRoll {
+    abilityName: string,
+    bonus: number,
+    dice: string,
+    type: string,
+}
+
+export interface AlchemyAttack {
+    ability: string,
+    bonus: number;
+    crit: number;
+    damageRolls: AlchemyActionStepDamage[];
+    isProficient: boolean;
+    isRanged: boolean;
+    name: string;
+    range: number;
+    longRange: number;
+    rollsAttack: boolean;
+    savingThrow: AlchemySkillCheck;
+}
+
+export interface AlchemyActionStepDamage{
+    bonus: number,
+    dice: string,
+    type: string,
+}
+
+export interface AlchemySkillCheck {
+    abilityName: string,
+    difficultyClass: number,
+}
+
+export interface AlchemySkillCheckAction{
+    rollModifier: string,
+    skillName: string,
 }
