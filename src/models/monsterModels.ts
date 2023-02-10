@@ -23,11 +23,11 @@ export const STATSFULL: {[key: number]: string} = {
 }
 
 export const MOVEMENT: {[key: number]: string} ={
-    1: "walking",
-    2: "burrowing",
-    3: "climbing",
-    4: "flying",
-    5: "swimming",
+    1: "walk",
+    2: "burrow",
+    3: "climb",
+    4: "fly",
+    5: "swim",
 }
 
 export const ALIGNMENT: {[key: number]: string} = {

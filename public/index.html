@@ -8,6 +8,16 @@
 <body>
     <div id="root">
         <h3>D&D Beyond Monster Converter</h3>
+        <p>
+            To get a valid Cobalt token follow these steps:
+        </p>
+        <ol>
+            <li>Login to D&D Beyond</li>
+            <li>Open the developer console (F12)</li>
+            <li>Go to the Application tab</li>
+            <li>In the left sidebar, go to Storage > Cookies</li>
+            <li>Find the cookie named CobaltSession and copy the value (this is the cobalt token)</li>
+        </ol>
         <form>
             <div>
                 <label for="cobalt">Cobalt Token: </label>
@@ -20,6 +30,12 @@
             <button type="submit" id="submit">Submit</button>
             <a id="downloadAnchorElem" style="display:none"></a>
         </form>
+
+        <p>
+            This tool is still in early stages of development, if you run into any issues please file a report
+            <a href="https://github.com/dragonman117/ddb-alchemy-tools/issues">here</a> please be sure to include the url
+            of hte monster you are trying to convert.
+        </p>
     </div>
 </body>
 <script src="./runtime.js"></script>
