@@ -112,10 +112,12 @@ function parseSpecialTraits(raw: string): AlchemyTextBlockSection[]{
     //Parse it to explore structure
     const parsed = parse(raw);
     parsed.childNodes.forEach((node) => {
+        if (node.childNodes.length == 0) return;
+        if (!node.childNodes[0].hasOwnProperty("rawTagName")) return;
         // @ts-ignore
         if (node.childNodes[0]["rawTagName"] == "em"){ // this is what D&D beyond uses as a title for a section
             const ability = {} as AlchemyTextBlock;
-            ability.title = node.childNodes[0].childNodes[0].rawText.slice(0, -1);
+            ability.title = node.childNodes[0].rawText.slice(0, -1);
             node.childNodes = node.childNodes.slice(1);
             ability.body = turndown.turndown(node.rawText);
             res.push(ability);
@@ -136,19 +138,24 @@ function parseActions(raw: string, prefix:string = ""): [AlchemyTextBlock[], Alc
     const parsed = parse(raw);
     parsed.childNodes.forEach((node) => {
         if (node.childNodes.length == 0) return;
+        if (!node.childNodes[0].hasOwnProperty("rawTagName")) return;
         // @ts-ignore
-        if (node.childNodes[0]["rawTagName"] == "em"){ // this is what D&D beyond uses as a title for a section
+        if (node.childNodes[0]["rawTagName"] == "em"){
+            const name = node.childNodes[0].rawText.slice(0, -1);
+            // this is what D&D beyond uses as a title for a section
             if (node.childNodes[0].childNodes.length > 1) {
-                if (node.childNodes[0].childNodes[1].rawText.includes("Melee Weapon Attack")){
+                if (node.childNodes[0].rawText.includes("Melee Weapon Attack")){
                     const tmpAction = parseMeleeAction(node, prefix);
                     if (tmpAction) actions.push(tmpAction);
+                    else features.push(parseAbility(node, prefix, name));
+                }
+                if (node.childNodes[0].rawText.includes("Ranged Weapon Attack")){
+                    const tmpAction = parseRangedAction(node, prefix);
+                    if (tmpAction) actions.push(tmpAction);
+                    else features.push(parseAbility(node, prefix, name));
                 }
             } else {
-                const ability = {} as AlchemyTextBlock;
-                ability.title = prefix + node.childNodes[0].childNodes[0].rawText.slice(0, -1);
-                node.childNodes = node.childNodes.slice(1);
-                ability.body = turndown.turndown(node.rawText);
-                features.push(ability);
+                features.push(parseAbility(node, prefix, name));
             }
         } else { // this paragraph is part of the previous section
             if (features.length < 1) return;
@@ -161,7 +168,16 @@ function parseActions(raw: string, prefix:string = ""): [AlchemyTextBlock[], Alc
     return [features, actions];
 }
 
-function parseMeleeAction(node: Node, prefix: string){
+function parseAbility(node: Node, prefix: string, name: string = ""): AlchemyTextBlock{
+    const ability = {} as AlchemyTextBlock;
+    const turndown = new TurndownService();
+    ability.title = prefix + name + node.childNodes[0].rawText.slice(0, -1);
+    node.childNodes = node.childNodes.slice(1);
+    ability.body = turndown.turndown(node.rawText);
+    return ability;
+}
+
+function parseMeleeAction(node: Node, prefix: string): AlchemyAttackStep | null{
     const action = {} as AlchemyAttackStep;
     action.description = node.rawText;
     const meleeRegex = /\+(?<toHit>[\d]+)[\S\s\d]+\((?<dice1>[\d]+d[\d]+)[\+\s]+(?<bonus1>[\d]+)\)[\s]+(?<type1>[\S]+)([\s\S]+\((?<dice2>[\d]+d[\d]+)\)[ ]+(?<type2>[\S]+))?/gm
@@ -196,6 +212,43 @@ function parseMeleeAction(node: Node, prefix: string){
             } as AlchemyActionStepDamage;
             attack.damageRolls.push(dmg2);
         }
+        action.steps = [{
+            type: "custom-attack",
+            attack: attack,
+        }];
+        return action;
+    }
+    return null;
+}
+
+function parseRangedAction(node: Node, prefix: string): AlchemyAttackStep | null{
+    const action = {} as AlchemyAttackStep;
+    action.description = node.rawText;
+    const rangedAction = /\+(?<toHit>[\d]+)[A-Za-z\s,.]+(?<lowRange>[\d]+)[A-Za-z .\/]+(?<highRange>[\d]+)[A-Za-z .,:\d]+\((?<dice>[\dd]+)[ \+]+(?<bonus>[\d]+)\)[ ]+(?<type>[A-Za-z]+)/gm
+    action.name = prefix + node.childNodes[0].rawText.slice(0, -1);
+    node.childNodes = node.childNodes.slice(1);
+    const match = rangedAction.exec(node.rawText);
+    const attack = {} as AlchemyAttack;
+    if (match){
+        // @ts-ignore
+        attack.bonus = parseInt(match.groups["toHit"] || "");
+        attack.crit = 20
+        attack.isProficient = false;
+        attack.name = action.name;
+        attack.rollsAttack = true;
+        attack.isRanged = true;
+        // @ts-ignore
+        attack.range = parseInt(match.groups["lowRange"] || "");
+        // @ts-ignore
+        attack.longRange = parseInt(match.groups["highRange"] || "");
+        attack.damageRolls = [{
+            // @ts-ignore
+            bonus: parseInt(match.groups["bonus"]),
+            // @ts-ignore
+            dice: match.groups["dice"],
+            // @ts-ignore
+            type: match.groups["type"],
+        }];
         action.steps = [{
             type: "custom-attack",
             attack: attack,
