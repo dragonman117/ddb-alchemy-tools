@@ -31,4 +31,12 @@ export class UrlTools {
         };
         return [`${this.monsterBaseUrl}?ids=${encodeURI(id)}`, header];
     }
+
+    public searchMonsterUrl(search: string, skip: number, take: number, showHomebrew = false): [string, object] {
+        const header = {
+            "Authorization" : `Bearer ${this.authToken}`,
+        };
+        const homebrew = showHomebrew ? "" : "&showHomebrew=f";
+        return [`${this.monsterBaseUrl}?search=${encodeURI(search)}&skip=${skip}&take=${take}${homebrew}`, header];
+    }
 }

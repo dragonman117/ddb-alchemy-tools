@@ -5,6 +5,23 @@ export interface getMonsterRequest{
     token: string;
 }
 
+export interface getMonsterSearch{
+    search: string;
+    skip: number;
+    take: number;
+    token: string;
+}
+
+export interface Pagnation{
+    "take": number,
+    "skip": number,
+    "currentPage": number | null,
+    "pages": number | null,
+    "total": number
+}
+
+
+
 export const STATS: {[key: number]: string} = {
     1: "str",
     2: "dex",
@@ -465,4 +482,9 @@ export interface Stat {
     statId: number;
     name:   null;
     value:  number;
+}
+
+export interface MonsterPage{
+    pagination: Pagnation,
+    data: MonsterData[]
 }

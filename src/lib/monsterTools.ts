@@ -30,6 +30,15 @@ export async function monsterTools(id: string, urlTool: UrlTools): Promise<any |
         return null;
 }
 
+export async function searchMonsters(search: string, skip: number, take: number, urlTool: UrlTools): Promise<any | null> {
+    const [monsterUrl, monsterHeader] = urlTool.searchMonsterUrl(search, skip, take);
+    const res = await fetch(monsterUrl, { method: "GET", headers: monsterHeader as HeadersInit });
+    if (res.status == 200)
+        return (await res.json());
+    else
+        return null;
+}
+
 export function monsterParse(source: MonsterData): AlchemyCharacter{
     const res = {} as AlchemyCharacter;
     const turndown = new TurndownService();
